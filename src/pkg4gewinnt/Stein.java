@@ -7,9 +7,6 @@ package pkg4gewinnt;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
 
 /**
  *
@@ -21,46 +18,43 @@ public class Stein {
     private int y;
     private final int WIDTH = 120, HEIGHT = 120;
     private int moveY;
-    private final Farbe farbe;
-    private Color color;
-    private PointerInfo a;
-    private Point b;
+    private final Color farbe;
+    private final int row, col;
     
-    public Stein(Farbe farbe) {
+    public Stein(Color farbe, int col, int row) {
         this.farbe = farbe;
-        if(Farbe.)
-    }
-    
-    public void startMoving() {
-        //moveY = 10;
+        this.x = col * 168 - 148;
+        this.y = 0;
+        this.moveY = 10;
+        this.row = row;
+        this.col = col;
     }
     
     public void stopMoving() {
-        //moveY = 0;
+        if(this.y >= (this.row - 1) * 148 + 140) {
+            this.moveY = 0;
+            this.y = (this.row - 1) * 147 + 140;
+        }
     }
     
     public int getCenterX() {
-        return x-= WIDTH;
+        return x-= WIDTH/2;
     }
     
     public int getCenterY() {
-        return y-= HEIGHT;
+        return y-= HEIGHT/2;
     }
     
     public void tick() {
-        //y += moveY;
+        this.y += this.moveY;
+        stopMoving();
         
-        double mouseX = MouseInfo.getPointerInfo().getLocation().getX();
-        double mouseY = MouseInfo.getPointerInfo().getLocation().getY();
-        x = (int) mouseX;
-        y = (int) mouseY;
-        System.out.println(x);
     }
     
     public void render(Graphics g) {
         
-        g.setColor(color);
-        g.fillOval(getCenterX(), getCenterY(), WIDTH, HEIGHT);
+        g.setColor(farbe);
+        g.fillOval(x, y, WIDTH, HEIGHT); 
         
     }
     

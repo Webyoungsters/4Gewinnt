@@ -7,6 +7,7 @@ package pkg4gewinnt;
 
 import java.awt.Canvas;
 import java.awt.Dimension;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 /**
@@ -15,9 +16,11 @@ import javax.swing.JFrame;
  */
 public class Window extends Canvas {
     
+    private JFrame frame;
+    
     public Window(String title, int width, int height, Game game) {
         
-        JFrame frame = new JFrame();
+        this.frame = new JFrame();
         frame.setTitle(title);
         
         frame.setPreferredSize(new Dimension(width, height));
@@ -32,6 +35,14 @@ public class Window extends Canvas {
         game.start();
         
         
+    }
+    
+    public void add(JComponent component) {
+        this.frame.add(component);
+    }
+    
+    public JFrame getFrame() {
+        return this.frame;
     }
     
 }

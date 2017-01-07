@@ -10,5 +10,6 @@ package pkg4gewinnt;
  * @author seralichtenhahn
  */
 public class Player {
+    private int anzahlZuege;
     
 }
