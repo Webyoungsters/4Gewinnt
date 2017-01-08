@@ -21,13 +21,13 @@ public class Stein {
     private final Color farbe;
     private final int row, col;
     
-    public Stein(Color farbe, int col, int row) {
+    public Stein(Color farbe, Feld feld) {
         this.farbe = farbe;
-        this.x = col * 168 - 148;
+        this.x = feld.getX() * 168 - 148;
         this.y = 0;
         this.moveY = 10;
-        this.row = row;
-        this.col = col;
+        this.row = feld.getY();
+        this.col = feld.getX();
     }
     
     public void stopMoving() {

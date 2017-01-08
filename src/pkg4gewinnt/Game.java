@@ -14,7 +14,6 @@ import java.awt.PointerInfo;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
-import javax.swing.JPanel;
 
 /**
  *
@@ -35,11 +34,23 @@ public class Game extends Canvas implements Runnable {
     
     public Game() {
         this.handler = new Handler();
+        this.board = new Board(this.handler);
         this.window = new Window( "4 Gewinnt by Serafin Lichtenhahn", WIDTH, HEIGHT, this);
         this.player = new Player();
-        this.board = new Board();
         
         listeners();
+    }
+    
+    public void gameMove() {
+        if(!this.board.isGameOver()) {
+            this.board.addPlayerMove(mouseX);
+            if (this.board.isGameOver())
+                return;
+            //this.board.minimax(0, 1);
+            
+            this.board.addComputerMove();
+            this.board.displayBoard();
+        }
     }
     
     public synchronized void start() {
@@ -61,7 +72,7 @@ public class Game extends Canvas implements Runnable {
     @Override
     public void run() {
         
-        //Game Loop -- gefunden auf Stack Overflow
+       //Game Loop -- gefunden auf Stack Overflow
         long lastTime = System.nanoTime();
         final double amountOfTicks = 60.0;
         double ns = 1000000000 / amountOfTicks;
@@ -83,7 +94,7 @@ public class Game extends Canvas implements Runnable {
 
             if(System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                System.out.println("Fps " + frames);
+                //System.out.println("Fps " + frames);
                 frames = 0;
             }
 
@@ -126,9 +137,7 @@ public class Game extends Canvas implements Runnable {
         addMouseListener(new MouseAdapter() { 
           @Override
           public void mousePressed(MouseEvent me) {
-              int col = board.getCol(mouseX);
-              int row = board.getRow(mouseX);
-              handler.addStein(new Stein(Color.RED, col,row));
+             gameMove();
           } 
         });
     }
