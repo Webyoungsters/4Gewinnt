@@ -20,6 +20,8 @@ public class Stein {
     private int moveY;
     private final Color farbe;
     private final int row, col;
+    private int delay;
+    private boolean visible;
     
     public Stein(Color farbe, Feld feld) {
         this.farbe = farbe;
@@ -28,7 +30,21 @@ public class Stein {
         this.moveY = 10;
         this.row = feld.getY();
         this.col = feld.getX();
+        this.delay = 0;
+        this.visible = true;
     }
+    
+    public Stein(Color farbe, Feld feld, int delay) {
+        this.farbe = farbe;
+        this.x = feld.getX() * 168 - 148;
+        this.y = 0;
+        this.moveY = 10;
+        this.row = feld.getY();
+        this.col = feld.getX();
+        this.delay = delay;
+        this.visible = false;
+    }
+    
     
     public void stopMoving() {
         if(this.y >= (this.row - 1) * 148 + 140) {
@@ -46,16 +62,22 @@ public class Stein {
     }
     
     public void tick() {
-        this.y += this.moveY;
-        stopMoving();
+        if(visible) {
+            this.y += this.moveY;
+            stopMoving();
+        } else {
+            this.delay -= 2;
+        }
         
+        if(this.delay < 0)
+            this.visible = true;
     }
     
     public void render(Graphics g) {
-        
-        g.setColor(farbe);
-        g.fillOval(x, y, WIDTH, HEIGHT); 
-        
+        if(visible) {
+            g.setColor(farbe);
+            g.fillOval(x, y, WIDTH, HEIGHT);
+        }
     }
     
 }

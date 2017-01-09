@@ -27,6 +27,7 @@ public class Game extends Canvas implements Runnable {
     private Thread thread;
     private Handler handler;
     private boolean running = false;
+    private boolean gameOver;
     private final Window window;
     private int mouseX;
     private PointerInfo a;
@@ -37,6 +38,7 @@ public class Game extends Canvas implements Runnable {
         this.board = new Board(this.handler);
         this.window = new Window( "4 Gewinnt by Serafin Lichtenhahn", WIDTH, HEIGHT, this);
         this.player = new Player();
+        this.gameOver = false;
         
         listeners();
     }
@@ -46,12 +48,17 @@ public class Game extends Canvas implements Runnable {
             this.board.addPlayerMove(mouseX);
             if (this.board.isGameOver())
                 return;
-            //this.board.minimax(0, 1);
+            this.board.callMiniMax(0, 1);
             
             this.board.addComputerMove();
             this.board.displayBoard();
         }
     }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+    
     
     public synchronized void start() {
         thread = new Thread(this);
@@ -128,6 +135,8 @@ public class Game extends Canvas implements Runnable {
         
         this.board.render(g);
         this.handler.render(g);
+        
+        
         
         g.dispose();
         bs.show();
