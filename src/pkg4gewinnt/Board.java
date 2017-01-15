@@ -5,8 +5,10 @@
  */
 package pkg4gewinnt;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -304,6 +306,8 @@ public class Board {
         
         if(this.isGameOver()) {
             g.setColor(Color.GREEN);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setStroke(new BasicStroke(7));
             g.drawLine(this.winFeld1.getX() * intervalX + 80,this.winFeld1.getY() * intervalY + 200, this.winFeld2.getX() * intervalX + 80, this.winFeld2.getY() * intervalY + 200);
         }
     }
