@@ -11,9 +11,12 @@ import java.awt.Graphics;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
+import javax.swing.JButton;
 
 /**
  *
@@ -23,40 +26,51 @@ public class Game extends Canvas implements Runnable {
     
     private static final int WIDTH = 1180, HEIGHT = WIDTH / 10 * 9;
     private Board board;
-    private Player player;
     private Thread thread;
     private Handler handler;
     private boolean running = false;
-    private boolean gameOver;
     private final Window window;
     private int mouseX;
     private PointerInfo a;
     private Point b;
+    private boolean playerTurn;
+    private Menu menu;
+    
+    public enum STATUS{
+        Menu,
+        Game
+    }
+    
+    public STATUS gameStatus = STATUS.Menu;
     
     public Game() {
         this.handler = new Handler();
         this.board = new Board(this.handler);
+        this.menu = new Menu(this);
         this.window = new Window( "4 Gewinnt by Serafin Lichtenhahn", WIDTH, HEIGHT, this);
-        this.player = new Player();
-        this.gameOver = false;
+        this.playerTurn = true;
         
         listeners();
     }
+
+    public void setGameStatus(STATUS gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+    
+    
     
     public void gameMove() {
         if(!this.board.isGameOver()) {
             this.board.addPlayerMove(mouseX);
+            this.playerTurn = false;
             if (this.board.isGameOver())
                 return;
-            this.board.callMiniMax(0, 1);
+            this.board.callMiniMax();
             
             this.board.addComputerMove();
             this.board.displayBoard();
+            this.playerTurn = true;
         }
-    }
-
-    public void setGameOver(boolean gameOver) {
-        this.gameOver = gameOver;
     }
     
     
@@ -112,12 +126,15 @@ public class Game extends Canvas implements Runnable {
     
     public void tick() {
         this.board.tick();
-        this.handler.tick();
-        
-        this.a = MouseInfo.getPointerInfo();
-        this.b = a.getLocation();
-        this.mouseX = (int) b.getX();
-        this.mouseX -= window.getFrame().getLocation().getX();
+        if(this.gameStatus == STATUS.Game) {
+            this.handler.tick();
+            this.a = MouseInfo.getPointerInfo();
+            this.b = a.getLocation();
+            this.mouseX = (int) b.getX();
+            this.mouseX -= window.getFrame().getLocation().getX();
+        }
+        if(this.gameStatus == STATUS.Menu)
+            this.menu.tick();
     }
     
     public void render() {
@@ -130,11 +147,16 @@ public class Game extends Canvas implements Runnable {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, WIDTH, HEIGHT);
         
-        g.setColor(Color.red);
-        g.fillOval(mouseX - 60, 0, 120, 120);
+        if(this.gameStatus == STATUS.Game) {
+            g.setColor(Color.red);
+            g.fillOval(mouseX - 60, 0, 120, 120);
+        }
         
         this.board.render(g);
         this.handler.render(g);
+        
+        if(this.gameStatus == STATUS.Menu)
+            this.menu.render(g);
         
         
         
@@ -146,9 +168,15 @@ public class Game extends Canvas implements Runnable {
         addMouseListener(new MouseAdapter() { 
           @Override
           public void mousePressed(MouseEvent me) {
-             gameMove();
-          } 
+            if(gameStatus == STATUS.Game && playerTurn)
+                gameMove();
+          }
         });
+        addMouseListener(this.menu);
+    }
+    
+    public Window getWindow() {
+        return this.window;
     }
     
 }

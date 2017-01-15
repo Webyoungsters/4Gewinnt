@@ -34,6 +34,8 @@ public class Board {
     public Board(Handler handler) {
         this.board = new int[7][6];
         this.handler = handler;
+        this.winFeld1 = new Feld(0, 0);
+        this.winFeld2 = new Feld(0, 0);
     }
     
     public void addPlayerMove(int mouseX) {
@@ -57,7 +59,7 @@ public class Board {
        //Feld feld = this.verfuegbareFelder.get(randomNum);
        Feld feld = this.computersMove;
        Feld steinFeld = new Feld(feld.getX() + 1, feld.getY() + 1);
-       this.handler.addStein(new Stein(Color.YELLOW, steinFeld));
+       this.handler.addStein(new Stein(Color.YELLOW, steinFeld, 150));
        saveMove(feld, 1);
     }
     
@@ -72,7 +74,7 @@ public class Board {
         return value;
     }
     
-    public int[] winningCords() {
+    /* public int[] winningCords() {
         int value[] = new int[4];
         
         value[0] = this.winFeld1.getX() * intervalX + 80;
@@ -81,7 +83,7 @@ public class Board {
         value[3] = this.winFeld2.getY() * intervalY + 200;
         
         return value;
-    }
+    } */ 
     
     public boolean isGameOver() {
         return (hasComputerWon() || hasPlayerWon() || getVerfuegbareFelder().isEmpty());
@@ -127,8 +129,8 @@ public class Board {
         }
     }
     
-    public void callMiniMax(int depth, int turn) {
-        minimax(depth, turn);
+    public void callMiniMax() {
+        minimax(0, 1);
     }
     
     public int minimax(int depth, int turn) {
@@ -143,9 +145,8 @@ public class Board {
        if(tempVerfuegbareFelder.isEmpty())
            return 0;
        
-       if(depth == this.MAX_DEPTH) {
-           return 0;
-       }
+       if(depth == this.MAX_DEPTH)
+           return min;
        
        int zeroCounter = 0;
        for(int i = 0; i < tempVerfuegbareFelder.size(); i++) {
@@ -167,7 +168,7 @@ public class Board {
                    this.computersMove = feld;
                }
                if(currentScore == 1) {
-                    resetMove(feld);
+                   resetMove(feld);
                    break;
                }
                if(i == tempVerfuegbareFelder.size() - 1 && max < 0) {
