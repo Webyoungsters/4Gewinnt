@@ -11,12 +11,9 @@ import java.awt.Graphics;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
-import javax.swing.JButton;
 
 /**
  *
@@ -24,19 +21,21 @@ import javax.swing.JButton;
  */
 public class Game extends Canvas implements Runnable {
     
-    private static final int WIDTH = 1180, HEIGHT = WIDTH / 10 * 9;
-    private Board board;
-    private Thread thread;
-    private Handler handler;
-    private boolean running = false;
+    public static final int WIDTH = 1180, HEIGHT = WIDTH / 10 * 9;
+    private final Board board;
+    private final Handler handler;
     private final Window window;
-    private int mouseX;
+    private final Menu menu;
+    
+    private Thread thread;
     private PointerInfo a;
     private Point b;
-    private boolean playerTurn;
-    private Menu menu;
+    private int mouseX;
     
-    public enum STATUS{
+    private boolean running = false;
+    private boolean playerTurn;
+    
+    public enum STATUS {
         Menu,
         Game
     }
@@ -51,13 +50,12 @@ public class Game extends Canvas implements Runnable {
         this.playerTurn = true;
         
         listeners();
+        
     }
 
     public void setGameStatus(STATUS gameStatus) {
         this.gameStatus = gameStatus;
     }
-    
-    
     
     public void gameMove() {
         if(!this.board.isGameOver()) {
@@ -68,18 +66,18 @@ public class Game extends Canvas implements Runnable {
             this.board.callMiniMax();
             
             this.board.addComputerMove();
-            this.board.displayBoard();
             this.playerTurn = true;
         }
     }
     
-    
+    //Teil des gefundenen GameLoops
     public synchronized void start() {
         thread = new Thread(this);
         thread.start();
         running = true;
     }
     
+    //Teil des gefundenen GameLoops
     public synchronized void stop() {
         try {
             thread.join();
@@ -88,7 +86,6 @@ public class Game extends Canvas implements Runnable {
             e.printStackTrace();
         }
     }
-    
     
     @Override
     public void run() {
@@ -115,7 +112,7 @@ public class Game extends Canvas implements Runnable {
 
             if(System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                //System.out.println("Fps " + frames);
+                System.out.println("Fps " + frames);
                 frames = 0;
             }
 
@@ -125,7 +122,6 @@ public class Game extends Canvas implements Runnable {
     }
     
     public void tick() {
-        this.board.tick();
         if(this.gameStatus == STATUS.Game) {
             this.handler.tick();
             this.a = MouseInfo.getPointerInfo();
@@ -133,8 +129,6 @@ public class Game extends Canvas implements Runnable {
             this.mouseX = (int) b.getX();
             this.mouseX -= window.getFrame().getLocation().getX();
         }
-        if(this.gameStatus == STATUS.Menu)
-            this.menu.tick();
     }
     
     public void render() {
@@ -144,6 +138,7 @@ public class Game extends Canvas implements Runnable {
             return;
         }       
         Graphics g = bs.getDrawGraphics();
+        
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, WIDTH, HEIGHT);
         

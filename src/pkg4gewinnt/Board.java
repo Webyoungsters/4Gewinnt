@@ -19,22 +19,19 @@ import java.util.List;
 public class Board {
     
     private final int ROW = 6, COL = 7, WIDTH = 1180, HEIGHT = WIDTH / 10 * 9;
-    private int[][] board;
-    
-    public List<Feld> verfuegbareFelder;
-    private final int MAX_DEPTH = 8;
-    
-    private Feld computersMove;
-    
-    private final Handler handler;
-    
-    private Feld winFeld1, winFeld2;
-    
+    private final int[][] board;
     private final int intervalX = Math.round(WIDTH / COL);
     private final int intervalY = Math.round((HEIGHT - 180) / ROW);
+    private final int MAX_DEPTH = 8;
+    private final Handler handler;
+    
+    public List<Feld> verfuegbareFelder;
+    
+    private Feld computersMove;
+    private Feld winFeld1, winFeld2;
     
     public Board(Handler handler) {
-        this.board = new int[7][6];
+        this.board = new int[COL][ROW];
         this.handler = handler;
         this.winFeld1 = new Feld(0, 0);
         this.winFeld2 = new Feld(0, 0);
@@ -42,27 +39,19 @@ public class Board {
     
     public void addPlayerMove(int mouseX) {
         int col = getColByCord(mouseX);
-        int x = 0;
         for(int row = ROW; row > 0; row--) {
             if(this.board[col - 1][row - 1] == 0) {
                 saveMove(new Feld(col - 1, row - 1), 2);
                 this.handler.addStein(new Stein(Color.RED, new Feld(col, row)));
-                displayBoard();
+                //displayBoard();
                 break;
             }
         }
     }
     
     public void addComputerMove() {
-       
-       //this.verfuegbareFelder = getVerfuegbareFelder();
-       //int randomNum = 1 + (int)(Math.random() * this.verfuegbareFelder.size());
-       
-       //Feld feld = this.verfuegbareFelder.get(randomNum);
-       Feld feld = this.computersMove;
-       Feld steinFeld = new Feld(feld.getX() + 1, feld.getY() + 1);
-       this.handler.addStein(new Stein(Color.YELLOW, steinFeld, 150));
-       saveMove(feld, 1);
+       this.handler.addStein(new Stein(Color.YELLOW, new Feld(this.computersMove.getX() + 1, this.computersMove.getY() + 1), 150));
+       saveMove(this.computersMove, 1);
     }
     
     private int getColByCord(int cordX) {
@@ -74,18 +63,7 @@ public class Board {
             }
         }
         return value;
-    }
-    
-    /* public int[] winningCords() {
-        int value[] = new int[4];
-        
-        value[0] = this.winFeld1.getX() * intervalX + 80;
-        value[1] = this.winFeld1.getY() * intervalY + 200;
-        value[2] = this.winFeld2.getX() * intervalX + 80;
-        value[3] = this.winFeld2.getY() * intervalY + 200;
-        
-        return value;
-    } */ 
+    } 
     
     public boolean isGameOver() {
         return (hasComputerWon() || hasPlayerWon() || getVerfuegbareFelder().isEmpty());
@@ -110,7 +88,6 @@ public class Board {
     
     public void saveMove(Feld feld, int player) {
         if(feld != null)
-            //System.out.println(feld);
             this.board[feld.getX()][feld.getY()] = player;
     }
     
@@ -119,6 +96,7 @@ public class Board {
             this.board[feld.getX()][feld.getY()] = 0;
     }
     
+    //Zum einfacheren debuggen. wird im fertigen Projekt nicht gebraucht. 
     public void displayBoard() {
         System.out.println();
 
@@ -135,7 +113,10 @@ public class Board {
         minimax(0, 1);
     }
     
-    public int minimax(int depth, int turn) {
+    
+    //basiert auf dem MiniMax Algorithmus.
+    //https://de.wikipedia.org/wiki/Minimax-Algorithmus
+    public int minimax(int depth, int spieler) {
        if(hasPlayerWon())
            return -1;
        if(hasComputerWon())
@@ -153,14 +134,12 @@ public class Board {
        int zeroCounter = 0;
        for(int i = 0; i < tempVerfuegbareFelder.size(); i++) {
            Feld feld = tempVerfuegbareFelder.get(i);
-           if(turn == 1) {
+           if(spieler == 1) {
                saveMove(feld, 1);
-               //displayBoard();
                 int currentScore = minimax(depth + 1, 2);
                 max = Math.max(currentScore, max);
                
                 if(depth == 0) {
-                   System.out.println("Score for Position "+ (i+1) + " = " + currentScore);
                    if(currentScore == 0)
                        zeroCounter++;
                 }
@@ -181,20 +160,18 @@ public class Board {
                if(zeroCounter == 7 && tempVerfuegbareFelder.size() == 7)
                    this.computersMove = tempVerfuegbareFelder.get(3);
                
-           } else if(turn == 2) {
+           } else if(spieler == 2) {
                saveMove(feld, 2);
-               //displayBoard();
                int currentScore = minimax(depth + 1, 1);
                min = Math.min(currentScore, min);
                if(min == -1) {
-                   //System.out.println(feld);
                    resetMove(feld);
                    break;
                }
            }
             resetMove(feld);
        }
-       return turn == 1 ? max : min;
+       return spieler == 1 ? max : min;
     }
     
     
@@ -214,7 +191,6 @@ public class Board {
                     if(this.board[col - 1][row - 1] == player) {
                         if(this.board[col - 2][row - 2] == player) {
                             if(this.board[col - 3][row - 3] == player) {
-                                //System.out.println("richtige Lösung: " + (col - 3) + "/" + (row-3) + " bis " + col + "/" + row);
                                 this.winFeld1 = new Feld(col, row);
                                 this.winFeld2 = new Feld(col - 3, row - 3);
                                 return true;
@@ -230,7 +206,6 @@ public class Board {
                     if(this.board[col + 1][row - 1] == player) {
                         if(this.board[col + 2][row - 2] == player) {
                             if(this.board[col + 3][row - 3] == player) {
-                                //System.out.println("richtige Lösung: " + (col + 3) + "/" + (row-3) + " bis " + col + "/" + row);
                                 this.winFeld1 = new Feld(col, row);
                                 this.winFeld2 = new Feld(col + 3, row - 3);
                                 return true;
@@ -251,7 +226,6 @@ public class Board {
                     if(this.board[col][row + 1] == player) {
                         if(this.board[col][row + 2] == player) {
                             if(this.board[col][row + 3] == player) {
-                                //System.out.println("richtige Lösung: " + col + "/" + row + " bis " + col + "/" + (row + 3));
                                 this.winFeld1 = new Feld(col, row);
                                 this.winFeld2 = new Feld(col, row + 3);
                                 return true;
@@ -271,7 +245,6 @@ public class Board {
                     if(this.board[col + 1][row] == player) {
                         if(this.board[col + 2][row] == player) {
                             if(this.board[col + 3][row] == player) {
-                                //System.out.println("richtige Lösung: " + col + "/" + row + " bis " + (col + 3) + "/" + row);
                                 this.winFeld1 = new Feld(col, row);
                                 this.winFeld2 = new Feld(col + 3, row);
                                 return true;
@@ -282,10 +255,6 @@ public class Board {
             }
         }
         return false;
-    }
-    
-    public void tick() {
-        
     }
     
     public void render(Graphics g) {
@@ -304,7 +273,7 @@ public class Board {
             }
         }
         
-        if(this.isGameOver()) {
+        if(this.hasComputerWon() || this.hasPlayerWon()) {
             g.setColor(Color.GREEN);
             Graphics2D g2 = (Graphics2D) g;
             g2.setStroke(new BasicStroke(7));

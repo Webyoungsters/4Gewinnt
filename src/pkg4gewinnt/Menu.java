@@ -24,8 +24,8 @@ import javax.imageio.ImageIO;
 class Menu extends MouseAdapter {
     
     private BufferedImage sprite;
-    private Game game;
-    private static final int WIDTH = 1180, HEIGHT = WIDTH / 10 * 9;
+    private final Game game;
+    private final int WIDTH = Game.WIDTH, HEIGHT = Game.HEIGHT; 
     
     public Menu(Game game) {
         loadImage();
@@ -33,27 +33,22 @@ class Menu extends MouseAdapter {
     }
     
     @Override
-    public void mouseReleased(MouseEvent e) {
-        super.mouseReleased(e); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void mousePressed(MouseEvent e) {
         int mouseX = e.getX();
         int mouseY = e.getY();
         
         //Neues Spiel
-        if(mouseOver(mouseX, mouseY, WIDTH/2 - 200, 500, 400, 100) && this.game.gameStatus == Game.STATUS.Menu) {
+        if(hoverOver(mouseX, mouseY, WIDTH/2 - 200, 500, 400, 100) && this.game.gameStatus == Game.STATUS.Menu) {
             this.game.setGameStatus(Game.STATUS.Game);
         }
         
         //Beenden
-        if(mouseOver(mouseX, mouseY, WIDTH/2 - 200, 640, 400, 100) && this.game.gameStatus == Game.STATUS.Menu) {
+        if(hoverOver(mouseX, mouseY, WIDTH/2 - 200, 640, 400, 100) && this.game.gameStatus == Game.STATUS.Menu) {
             this.game.getWindow().getFrame().dispatchEvent(new WindowEvent(this.game.getWindow().getFrame(), WindowEvent.WINDOW_CLOSING));
         }
     }
     
-    public boolean mouseOver(int mouseX, int mouseY, int x , int y, int width, int height) {
+    private boolean hoverOver(int mouseX, int mouseY, int x , int y, int width, int height) {
         if(mouseX > x && mouseX < x + width) {
             if(mouseY > y && mouseY < y + height)
                 return true;
@@ -61,12 +56,8 @@ class Menu extends MouseAdapter {
         return false;
     }
     
-    public void tick() {
-        
-    }
-    
     public void render(Graphics g) {
-        g.setColor(new Color(0,0,255, 220));
+        g.setColor(new Color(0,0,255, 180));
         g.fillRect(0, 0, WIDTH, HEIGHT);
         
         g.drawImage(sprite, WIDTH/2 - 200, 200, WIDTH/2 + 200, 400, 0, 0, 518, 277, null);

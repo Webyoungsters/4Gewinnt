@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class Handler {
     
-    private LinkedList<Stein> steine = new LinkedList<Stein>();
+    private final LinkedList<Stein> steine = new LinkedList<Stein>();
     
     public void tick() {
         for(int i = 0; i < steine.size(); i++) {

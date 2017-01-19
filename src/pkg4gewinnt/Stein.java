@@ -14,33 +14,28 @@ import java.awt.Graphics;
  */
 public class Stein {
     
-    private int x;
-    private int y;
     private final int WIDTH = 120, HEIGHT = 120;
-    private int moveY;
     private final Color farbe;
-    private final int row, col;
-    private int delay;
+    private final int row;
+    
     private boolean visible;
+    private int x;
+    
+    private int y = 0;
+    private int moveY = 10;
+    private int delay = 0;
     
     public Stein(Color farbe, Feld feld) {
         this.farbe = farbe;
         this.x = feld.getX() * 168 - 148;
-        this.y = 0;
-        this.moveY = 10;
         this.row = feld.getY();
-        this.col = feld.getX();
-        this.delay = 0;
         this.visible = true;
     }
     
     public Stein(Color farbe, Feld feld, int delay) {
         this.farbe = farbe;
         this.x = feld.getX() * 168 - 148;
-        this.y = 0;
-        this.moveY = 10;
         this.row = feld.getY();
-        this.col = feld.getX();
         this.delay = delay;
         this.visible = false;
     }
@@ -65,12 +60,11 @@ public class Stein {
         if(visible) {
             this.y += this.moveY;
             stopMoving();
-        } else {
-            this.delay -= 2;
         }
         
-        if(this.delay < 0)
-            this.visible = true;
+        this.delay = !this.visible ? this.delay - 2 : 0;
+        
+        this.visible = this.delay <= 0;
     }
     
     public void render(Graphics g) {

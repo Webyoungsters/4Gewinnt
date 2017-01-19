@@ -10,8 +10,8 @@ package pkg4gewinnt;
  * @author seralichtenhahn
  */
 class Feld {
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     public Feld(int x, int y) {
         this.x = x;
@@ -24,12 +24,5 @@ class Feld {
 
     public int getY() {
         return y;
-    }
-    
-    
-
-    @Override
-    public String toString() {
-        return "[ " + x + ", " + y + " ]";
     }
 }
